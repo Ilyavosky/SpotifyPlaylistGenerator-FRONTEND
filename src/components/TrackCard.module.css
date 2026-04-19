@@ -85,3 +85,21 @@
 .btnAccept:hover {
   background: #4ade80;
 }
+
+
+.btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s, border-color .15s;
+}
+
+.btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}

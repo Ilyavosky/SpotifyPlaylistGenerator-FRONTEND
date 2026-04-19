@@ -84,18 +84,16 @@
   color: var(--muted);
   flex-shrink: 0;
 }
-
-.bloq {
-  font-size: 10px;
-  color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
-  padding: 3px 10px;
-  border-radius: 999px;
+.iconCheck {
+  color: var(--muted);
   flex-shrink: 0;
 }
 
-.btnquitar {
-  font-size: 11px;
-  color: var(--danger);
+.btnTrash {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s;
   flex-shrink: 0;
 }

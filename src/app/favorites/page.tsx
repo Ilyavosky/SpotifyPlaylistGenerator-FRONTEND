@@ -14,7 +14,7 @@ function formatDuration(ms: number): string {
 
 function FavoritesContent() {
   const params = useSearchParams();
-  const sessionId = Number(params.get('session_id')) || null;
+  const sessionId = params.get('session_id') ? Number(params.get('session_id')) : null;
   const { favorites, loading, error, updateStatus } = useFavorites(sessionId);
 
   return (
@@ -23,33 +23,30 @@ function FavoritesContent() {
 
       {loading && <p className={styles.muted}>Cargando...</p>}
       {error && <p className={styles.error}>{error}</p>}
-      {!loading && !sessionId && (
-    <p className={styles.muted}>No hay nada seleccionado</p>
+      {!loading && !sessionId && <p className={styles.muted}>No hay favoritos.</p>}
+      {!loading && sessionId && favorites.length === 0 && !error && (
+        <p className={styles.muted}>No tienes canciones aceptadas aún.</p>
       )}
 
       <div className={styles.list}>
         {favorites.map(fav => (
           <div key={fav.id} className={styles.card}>
-            {fav.cover_url ? (
-              <img src={fav.cover_url} alt={fav.album_name} className={styles.cover} />
-            ) : (
-              <div className={styles.coverPlaceholder} />
-            )}
-
+            {fav.cover_url
+              ? <img src={fav.cover_url} alt={fav.album_name} className={styles.cover} />
+              : <div className={styles.coverPlaceholder} />
+            }
             <div className={styles.info}>
               <p className={styles.name}>{fav.track_name}</p>
               <p className={styles.meta}>{fav.artist_name} · {fav.album_name}</p>
             </div>
-
             <span className={styles.duration}>{formatDuration(fav.duration_ms)}</span>
-
-            <span className={styles.bloq}>aceptado</span>
-
-            <button
-              className={styles.btnquitar}
-              onClick={() => updateStatus(fav.track_id, 'rejected')}
-            >
-              quitar
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className={styles.iconCheck}>
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            <button className={styles.btnTrash} onClick={() => updateStatus(fav.track_id, 'rejected')} aria-label="Quitar">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
             </button>
           </div>
         ))}

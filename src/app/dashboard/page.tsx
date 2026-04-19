@@ -46,8 +46,7 @@ export default function DashboardPage() {
         target_energy: energy,
         target_danceability: danceability,
       });
-    } catch {
-    }
+    } catch {}
   };
 
   const handleAccept = async (trackId: number) => {
@@ -115,9 +114,9 @@ export default function DashboardPage() {
           <p className={styles.label}>Recomendaciones</p>
 
           {error && <p className={styles.error}>{error}</p>}
-          {loadingTracks && <p className={styles.muted}>Buscando tracks...</p>}
-          {!loadingTracks && tracks.length === 0 && (
-            <p className={styles.muted}>Configura tu sesión y presiona Generar.</p>
+          {loadingTracks && <p className={styles.muted}>Buscando...</p>}
+          {!loadingTracks && tracks.length === 0 && !error && (
+            <p className={styles.muted}>Ingresa para crear</p>
           )}
 
           <div className={styles.list}>
@@ -132,11 +131,11 @@ export default function DashboardPage() {
             <div className={styles.exportWrapper}>
               {exportUrl ? (
                 <a href={exportUrl} target="_blank" rel="noopener noreferrer" className={styles.btnSpotify}>
-                  Ver en Spotify 
+                  Ver en Spotify
                 </a>
               ) : (
                 <button onClick={handleExport} disabled={exporting} className={styles.btnExport}>
-                  {exporting ? 'Exportando...' : `Exportar a Spotify (${accepted.size} tracks) `}
+                  {exporting ? 'Exportando...' : `Exportar a Spotify (${accepted.size} tracks)`}
                 </button>
               )}
             </div>
