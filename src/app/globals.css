@@ -55,7 +55,7 @@ input, textarea {
 
 .login-card {
   text-align: center;
-  padding: 56px 48px;
+  padding: 56px 30px;
   background: var(--bg-2); 
   border: 1px solid var(--border);
   border-radius: 16px; 
@@ -89,7 +89,7 @@ input, textarea {
   border-radius: 999px;
   transition: opacity .2s;
 }
-.login__btn:hover { opacity: .85; }
+.login-btn:hover { opacity: .85; }
 
 
 @keyframes spin { to { transform: rotate(360deg); } }

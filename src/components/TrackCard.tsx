@@ -60,14 +60,14 @@ export default function TrackCard({ track, onAccept, onReject }: TrackCardProps)
         <button
           onClick={() => onReject(track.id)}
           aria-label="Rechazar"
-          className={styles.btnReject}
+          className={styles.btnrechazo}
         >
           <IconX />
         </button>
         <button
           onClick={() => onAccept(track.id)}
           aria-label="Aceptar"
-          className={styles.btnAccept}
+          className={styles.btnAceptar}
         >
           <IconHeart />
         </button>

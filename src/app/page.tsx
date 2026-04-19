@@ -5,9 +5,9 @@ export default function LoginPage() {
     <main className="login">
       <div className="login-g" />
       <div className="login-card">
-        <h1 className="login-titulo">SPOTT(FALTA)</h1>
+        <h1 className="login-titulo">JOTARO</h1>
         <p className="login-text">
-          Crea tu playlist
+          Crea tu playlist TUNTUNTUN
         </p>
         <a href={`${apiUrl}/auth/login`} className="login-btn">
           Conectar con Spotify
