@@ -10,11 +10,6 @@ const apiFetch = async (endpoint: string, options?: RequestInit) => {
     },
   });
 
-  if (res.status === 401) {
-    window.location.href = '/';
-    return;
-  }
-
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || 'Error inesperado');

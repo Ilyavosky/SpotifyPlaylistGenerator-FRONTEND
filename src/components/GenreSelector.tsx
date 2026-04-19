@@ -21,7 +21,7 @@ export default function GenreSelector({ genres, selected, onChange, max = 5 }: G
     <div className={styles.genreSelector}>
       <div className={styles.header}>
         <span className={styles.label}>Géneros</span>
-        <span className={styles.cont}>{selected.length}/{max}</span>
+        <span className={styles.cont}>Máx: {max}</span>
       </div>
       <div className={styles.genre}>
         {genres.map((genre) => {

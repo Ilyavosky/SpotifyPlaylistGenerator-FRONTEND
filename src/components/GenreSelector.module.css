@@ -25,32 +25,19 @@
   gap: 6px; 
   max-height: 160px; 
   overflow-y: auto; 
-  scrollbar-width: thin; 
-  scrollbar-color: var(--border) transparent; 
 }
 
 .chip { 
   font-size: 11px; 
   padding: 5px 12px; 
-  border-radius: 999px; 
+  border-radius: 5px; 
   border: 1px solid var(--border); 
   color: var(--muted); 
-  background: var(--bg); 
-  transition: all .15s; 
-}
 
-.chip:hover:not(:disabled) { 
-  border-color: var(--accent); 
-  color: var(--accent); 
 }
 
 .selected { 
   border-color: var(--accent); 
   color: var(--accent); 
-  background: rgba(30,215,96,.08); 
-}
-
-.disabled { 
-  opacity: .3; 
-  cursor: not-allowed; 
+  background:rgba(163, 30, 215, 0.1);
 }

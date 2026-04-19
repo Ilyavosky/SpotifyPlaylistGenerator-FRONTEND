@@ -84,7 +84,7 @@ export default function DashboardPage() {
       <main className={styles.layout_main}>
 
         <div className={styles.panel}>
-          <p className={styles.label}>Nueva sesión</p>
+          <p className={styles.label}>Playlist</p>
 
           <div className={styles.field}>
             <p className={styles.fieldLabel}>Nombre</p>
@@ -92,7 +92,7 @@ export default function DashboardPage() {
               type="text"
               value={sessionName}
               onChange={e => setSessionName(e.target.value)}
-              placeholder="Mi playlist de noche..."
+              placeholder="Playlist..."
               className={styles.input}
             />
           </div>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           <VibeSlider label="Bailabilidad" description="Qué tan bailable es" value={danceability} onChange={setDanceability} />
 
           <button onClick={handleGenerate} disabled={!canGenerate} className={styles.btnGenerate}>
-            {loadingTracks ? 'Generando...' : 'Generar →'}
+            {loadingTracks ? 'Generando...' : 'Generar'}
           </button>
         </div>
 

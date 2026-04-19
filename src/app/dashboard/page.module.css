@@ -10,7 +10,7 @@
 }
 
 .panel {
-  width: 260px;
+  width: 360px;
   border-right: 1px solid var(--border);
   padding: 28px 20px;
   display: flex;
