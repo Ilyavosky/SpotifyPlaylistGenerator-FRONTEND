@@ -51,18 +51,26 @@ export default function DashboardPage() {
   };
 
   const handleAccept = async (trackId: number) => {
-    if (!sessionId) return;
+  if (!sessionId) return;
+  try {
     await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'accepted' });
     setAccepted(prev => new Set(prev).add(trackId));
     setRejected(prev => { const s = new Set(prev); s.delete(trackId); return s; });
-  };
+  } catch (err) {
+    console.error('handleAccept error:', err);
+  }
+};
 
-  const handleReject = async (trackId: number) => {
-    if (!sessionId) return;
+const handleReject = async (trackId: number) => {
+  if (!sessionId) return;
+  try {
     await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'rejected' });
     setRejected(prev => new Set(prev).add(trackId));
     setAccepted(prev => { const s = new Set(prev); s.delete(trackId); return s; });
-  };
+  } catch (err) {
+    console.error('handleReject error:', err);
+  }
+};
 
   const handleExport = async () => {
     if (!sessionId || accepted.size === 0) return;
