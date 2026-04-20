@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/SideBar';
 import { useFavorites } from '@/hooks/useFavorites';
+import { api } from '@/services/api';
+import { useState } from 'react';
 import styles from './page.module.css';
 
 function formatDuration(ms: number): string {
@@ -26,7 +28,29 @@ function FavoritesContent() {
     ? Number(storedId)
     : null;
 
+  const sessionName = typeof window !== 'undefined'
+    ? sessionStorage.getItem('session_name') ?? 'Mi Playlist'
+    : 'Mi Playlist';
+
   const { favorites, loading, error, updateStatus } = useFavorites(sessionId);
+  const [exporting, setExporting] = useState(false);
+  const [exportUrl, setExportUrl] = useState<string | null>(
+    typeof window !== 'undefined' ? sessionStorage.getItem('export_url') || null : null
+  );
+
+  const handleExport = async () => {
+    if (!sessionId || favorites.length === 0) return;
+    setExporting(true);
+    try {
+      const result = await api.post('/playlists', { session_id: sessionId, name: sessionName });
+      setExportUrl(result.spotify_url);
+      sessionStorage.setItem('export_url', result.spotify_url);
+    } catch (err) {
+      console.error('handleExport error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <main className={styles.main}>
@@ -51,9 +75,6 @@ function FavoritesContent() {
               <p className={styles.meta}>{fav.artist_name} · {fav.album_name}</p>
             </div>
             <span className={styles.duration}>{formatDuration(fav.duration_ms)}</span>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className={styles.iconCheck}>
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
             <button className={styles.btnTrash} onClick={() => updateStatus(fav.track_id, 'rejected')} aria-label="Quitar">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/>
@@ -62,6 +83,20 @@ function FavoritesContent() {
           </div>
         ))}
       </div>
+
+      {favorites.length > 0 && (
+        <div className={styles.exportWrapper}>
+          {exportUrl ? (
+            <a href={exportUrl} target="_blank" rel="noopener noreferrer" className={styles.btnSpotify}>
+              Ver en Spotify
+            </a>
+          ) : (
+            <button onClick={handleExport} disabled={exporting} className={styles.btnExport}>
+              {exporting ? 'Exportando...' : `Exportar a Spotify (${favorites.length} tracks)`}
+            </button>
+          )}
+        </div>
+      )}
     </main>
   );
 }
