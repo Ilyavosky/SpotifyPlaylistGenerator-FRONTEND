@@ -1,0 +1,43 @@
+.genreSelector { 
+  margin-bottom: 20px; 
+}
+
+.header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 12px; 
+}
+
+.label { 
+  font-size: 13px; 
+  font-weight: 600; 
+}
+
+.cont { 
+  font-size: 11px; 
+  color: var(--muted); 
+}
+
+.genre { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 6px; 
+  max-height: 160px; 
+  overflow-y: auto; 
+}
+
+.chip { 
+  font-size: 11px; 
+  padding: 5px 12px; 
+  border-radius: 5px; 
+  border: 1px solid var(--border); 
+  color: var(--muted); 
+
+}
+
+.selected { 
+  border-color: var(--accent); 
+  color: var(--accent); 
+  background:rgba(163, 30, 215, 0.1);
+}
