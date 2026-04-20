@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './SideBar.module.css';
 
 const links = [
@@ -21,6 +21,15 @@ const logoutIcon = <svg viewBox="0 0 24 24" fill="currentColor" width="35" heigh
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    router.push('/');
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -39,7 +48,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <Link href="/" className={styles.link} title="Salir">{logoutIcon}</Link>
+      <button onClick={handleLogout} className={styles.link} title="Salir">{logoutIcon}</button>
     </aside>
   );
 }

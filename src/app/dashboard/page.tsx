@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/SideBar';
 import GenreSelector from '@/components/GenreSelector';
 import VibeSlider from '@/components/VibeSlider';
@@ -130,9 +131,14 @@ export default function DashboardPage() {
           {accepted.size > 0 && (
             <div className={styles.exportWrapper}>
               {exportUrl ? (
-                <a href={exportUrl} target="_blank" rel="noopener noreferrer" className={styles.btnSpotify}>
-                  Ver en Spotify
-                </a>
+                <>
+                  <a href={exportUrl} target="_blank" rel="noopener noreferrer" className={styles.btnSpotify}>
+                    Ver en Spotify
+                  </a>
+                  <Link href={`/favorites?session_id=${sessionId}`} className={styles.btnExport}>
+                    Ver favoritos
+                  </Link>
+                </>
               ) : (
                 <button onClick={handleExport} disabled={exporting} className={styles.btnExport}>
                   {exporting ? 'Exportando...' : `Exportar a Spotify (${accepted.size} tracks)`}
