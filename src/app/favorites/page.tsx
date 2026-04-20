@@ -14,7 +14,13 @@ function formatDuration(ms: number): string {
 
 function FavoritesContent() {
   const params = useSearchParams();
-  const sessionId = params.get('session_id') ? Number(params.get('session_id')) : null;
+  const sessionIdParam = params.get('session_id');
+  const sessionId = sessionIdParam
+    ? Number(sessionIdParam)
+    : sessionStorage.getItem('current_session_id')
+    ? Number(sessionStorage.getItem('current_session_id'))
+    : null;
+
   const { favorites, loading, error, updateStatus } = useFavorites(sessionId);
 
   return (

@@ -27,28 +27,29 @@ export default function DashboardPage() {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
 
   const handleGenerate = async () => {
-    if (!sessionName || selectedGenres.length === 0) return;
-    try {
-      const session = await api.post('/sessions', {
-        name: sessionName,
-        target_valence: valence,
-        target_energy: energy,
-        target_danceability: danceability,
-        seed_genres: selectedGenres,
-      });
-      setSessionId(session.id);
-      setAccepted(new Set());
-      setRejected(new Set());
-      setExportUrl(null);
-      await fetchRecommendations({
-        session_id: session.id,
-        seed_genres: selectedGenres,
-        target_valence: valence,
-        target_energy: energy,
-        target_danceability: danceability,
-      });
-    } catch {}
-  };
+  if (!sessionName || selectedGenres.length === 0) return;
+  try {
+    const session = await api.post('/sessions', {
+      name: sessionName,
+      target_valence: valence,
+      target_energy: energy,
+      target_danceability: danceability,
+      seed_genres: selectedGenres,
+    });
+    setSessionId(session.id);
+    sessionStorage.setItem('current_session_id', String(session.id));
+    setAccepted(new Set());
+    setRejected(new Set());
+    setExportUrl(null);
+    await fetchRecommendations({
+      session_id: session.id,
+      seed_genres: selectedGenres,
+      target_valence: valence,
+      target_energy: energy,
+      target_danceability: danceability,
+    });
+  } catch {}
+};
 
   const handleAccept = async (trackId: number) => {
   if (!sessionId) return;
