@@ -121,13 +121,16 @@ export default function DashboardPage() {
           )}
 
           <div className={styles.list}>
-            {visibleTracks.map(track => (
-              <div key={track.id} className={accepted.has(track.id) ? styles.accepted : ''}>
-                <TrackCard track={track} onAccept={handleAccept} onReject={handleReject} />
-              </div>
+        {visibleTracks.map(track => (
+          <TrackCard
+              key={track.id}
+              track={track}
+              onAccept={handleAccept}
+              onReject={handleReject}
+              isAccepted={accepted.has(track.id)}
+              />
             ))}
           </div>
-
           {accepted.size > 0 && (
             <div className={styles.exportWrapper}>
               {exportUrl ? (

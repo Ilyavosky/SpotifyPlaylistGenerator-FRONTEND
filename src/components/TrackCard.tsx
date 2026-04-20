@@ -7,6 +7,7 @@ interface TrackCardProps {
   track: Track & { artist_name?: string; album_name?: string; cover_url?: string; };
   onAccept: (trackId: number) => void;
   onReject: (trackId: number) => void;
+  isAccepted?: boolean;
 }
 
 function formatDuration(ms: number): string {
@@ -21,15 +22,15 @@ const IconX = () => (
   </svg>
 );
 
-const IconHeart = () => (
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+const IconHeart = ({ filled }: { filled?: boolean }) => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill={filled ? 'var(--danger)' : 'currentColor'}>
     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
   </svg>
 );
 
-export default function TrackCard({ track, onAccept, onReject }: TrackCardProps) {
+export default function TrackCard({ track, onAccept, onReject, isAccepted }: TrackCardProps) {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isAccepted ? styles.cardAccepted : ''}`}>
       {track.cover_url
         ? <img src={track.cover_url} alt={track.album_name ?? track.name} className={styles.cover} />
         : <div className={styles.coverPlaceholder} />
@@ -41,7 +42,9 @@ export default function TrackCard({ track, onAccept, onReject }: TrackCardProps)
       <span className={styles.duration}>{formatDuration(track.duration_ms)}</span>
       <div className={styles.actions}>
         <button onClick={() => onReject(track.id)} aria-label="Descartar" className={styles.btn}><IconX /></button>
-        <button onClick={() => onAccept(track.id)} aria-label="Favorito" className={styles.btn}><IconHeart /></button>
+        <button onClick={() => onAccept(track.id)} aria-label="Favorito" className={`${styles.btn} ${isAccepted ? styles.btnActive : ''}`}>
+          <IconHeart filled={isAccepted} />
+        </button>
       </div>
     </div>
   );
