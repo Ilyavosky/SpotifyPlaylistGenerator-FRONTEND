@@ -97,3 +97,44 @@
   transition: color .15s;
   flex-shrink: 0;
 }
+
+.exportWrapper {
+  margin-top: 24px;
+  max-width: 700px;
+  display: flex;
+  gap: 12px;
+}
+
+.btnExport {
+  padding: 12px 24px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.btnExport:hover {
+  opacity: 0.85;
+}
+
+.btnExport:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSpotify {
+  padding: 12px 24px;
+  background: #1DB954;
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 700;
+  transition: opacity .15s;
+}
+
+.btnSpotify:hover {
+  opacity: 0.85;
+}
