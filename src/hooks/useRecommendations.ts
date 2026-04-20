@@ -17,14 +17,16 @@ export function useRecommendations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecommendations = async (params: RecommendationParams) => {
+  const fetchRecommendations = async (params: RecommendationParams): Promise<Track[] | null> => {
     setLoading(true);
     setError(null);
     try {
       const data = await api.post('/recommendations', params);
       setTracks(data.tracks);
+      return data.tracks;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al obtener recomendaciones');
+      return null;
     } finally {
       setLoading(false);
     }

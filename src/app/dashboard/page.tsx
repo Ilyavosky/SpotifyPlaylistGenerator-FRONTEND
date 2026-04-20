@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/SideBar';
 import GenreSelector from '@/components/GenreSelector';
@@ -9,6 +9,7 @@ import TrackCard from '@/components/TrackCard';
 import { useGenres } from '@/hooks/useGenres';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { api } from '@/services/api';
+import { Track } from '@/types';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
@@ -25,53 +26,83 @@ export default function DashboardPage() {
   const [rejected, setRejected] = useState<Set<number>>(new Set());
   const [exporting, setExporting] = useState(false);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
+  const [persistedTracks, setPersistedTracks] = useState<Track[]>([]);
+
+  useEffect(() => {
+    const storedSessionId = sessionStorage.getItem('current_session_id');
+    const storedAccepted = sessionStorage.getItem('accepted_tracks');
+    const storedTracks = sessionStorage.getItem('session_tracks');
+    const storedExportUrl = sessionStorage.getItem('export_url');
+    const storedSessionName = sessionStorage.getItem('session_name');
+
+    if (storedSessionId) setSessionId(Number(storedSessionId));
+    if (storedAccepted) setAccepted(new Set(JSON.parse(storedAccepted)));
+    if (storedTracks) setPersistedTracks(JSON.parse(storedTracks));
+    if (storedExportUrl) setExportUrl(storedExportUrl);
+    if (storedSessionName) setSessionName(storedSessionName);
+  }, []);
 
   const handleGenerate = async () => {
-  if (!sessionName || selectedGenres.length === 0) return;
-  try {
-    const session = await api.post('/sessions', {
-      name: sessionName,
-      target_valence: valence,
-      target_energy: energy,
-      target_danceability: danceability,
-      seed_genres: selectedGenres,
-    });
-    setSessionId(session.id);
-    sessionStorage.setItem('current_session_id', String(session.id));
-    setAccepted(new Set());
-    setRejected(new Set());
-    setExportUrl(null);
-    await fetchRecommendations({
-      session_id: session.id,
-      seed_genres: selectedGenres,
-      target_valence: valence,
-      target_energy: energy,
-      target_danceability: danceability,
-    });
-  } catch {}
-};
+    if (!sessionName || selectedGenres.length === 0) return;
+    try {
+      const session = await api.post('/sessions', {
+        name: sessionName,
+        target_valence: valence,
+        target_energy: energy,
+        target_danceability: danceability,
+        seed_genres: selectedGenres,
+      });
+      setSessionId(session.id);
+      setAccepted(new Set());
+      setRejected(new Set());
+      setExportUrl(null);
+      setPersistedTracks([]);
+      sessionStorage.setItem('current_session_id', String(session.id));
+      sessionStorage.setItem('accepted_tracks', JSON.stringify([]));
+      sessionStorage.setItem('export_url', '');
+      sessionStorage.setItem('session_name', sessionName);
+
+      const result = await fetchRecommendations({
+        session_id: session.id,
+        seed_genres: selectedGenres,
+        target_valence: valence,
+        target_energy: energy,
+        target_danceability: danceability,
+      });
+
+      if (result) {
+        setPersistedTracks(result);
+        sessionStorage.setItem('session_tracks', JSON.stringify(result));
+      }
+    } catch {}
+  };
 
   const handleAccept = async (trackId: number) => {
-  if (!sessionId) return;
-  try {
-    await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'accepted' });
-    setAccepted(prev => new Set(prev).add(trackId));
-    setRejected(prev => { const s = new Set(prev); s.delete(trackId); return s; });
-  } catch (err) {
-    console.error('handleAccept error:', err);
-  }
-};
+    if (!sessionId) return;
+    try {
+      await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'accepted' });
+      const newAccepted = new Set(accepted).add(trackId);
+      setAccepted(newAccepted);
+      setRejected(prev => { const s = new Set(prev); s.delete(trackId); return s; });
+      sessionStorage.setItem('accepted_tracks', JSON.stringify(Array.from(newAccepted)));
+    } catch (err) {
+      console.error('handleAccept error:', err);
+    }
+  };
 
-const handleReject = async (trackId: number) => {
-  if (!sessionId) return;
-  try {
-    await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'rejected' });
-    setRejected(prev => new Set(prev).add(trackId));
-    setAccepted(prev => { const s = new Set(prev); s.delete(trackId); return s; });
-  } catch (err) {
-    console.error('handleReject error:', err);
-  }
-};
+  const handleReject = async (trackId: number) => {
+    if (!sessionId) return;
+    try {
+      await api.patch('/favorites/status', { session_id: sessionId, track_id: trackId, status: 'rejected' });
+      setRejected(prev => new Set(prev).add(trackId));
+      const newAccepted = new Set(accepted);
+      newAccepted.delete(trackId);
+      setAccepted(newAccepted);
+      sessionStorage.setItem('accepted_tracks', JSON.stringify(Array.from(newAccepted)));
+    } catch (err) {
+      console.error('handleReject error:', err);
+    }
+  };
 
   const handleExport = async () => {
     if (!sessionId || accepted.size === 0) return;
@@ -79,12 +110,14 @@ const handleReject = async (trackId: number) => {
     try {
       const result = await api.post('/playlists', { session_id: sessionId, name: sessionName });
       setExportUrl(result.spotify_url);
+      sessionStorage.setItem('export_url', result.spotify_url);
     } finally {
       setExporting(false);
     }
   };
 
-  const visibleTracks = tracks.filter(t => !rejected.has(t.id));
+  const displayTracks = tracks.length > 0 ? tracks : persistedTracks;
+  const visibleTracks = displayTracks.filter(t => !rejected.has(t.id));
   const canGenerate = !loadingTracks && sessionName.length > 0 && selectedGenres.length > 0;
 
   return (
@@ -125,21 +158,22 @@ const handleReject = async (trackId: number) => {
 
           {error && <p className={styles.error}>{error}</p>}
           {loadingTracks && <p className={styles.muted}>Buscando...</p>}
-          {!loadingTracks && tracks.length === 0 && !error && (
+          {!loadingTracks && displayTracks.length === 0 && !error && (
             <p className={styles.muted}>Ingresa para crear</p>
           )}
 
           <div className={styles.list}>
-        {visibleTracks.map(track => (
-          <TrackCard
-              key={track.id}
-              track={track}
-              onAccept={handleAccept}
-              onReject={handleReject}
-              isAccepted={accepted.has(track.id)}
+            {visibleTracks.map(track => (
+              <TrackCard
+                key={track.id}
+                track={track}
+                onAccept={handleAccept}
+                onReject={handleReject}
+                isAccepted={accepted.has(track.id)}
               />
             ))}
           </div>
+
           {accepted.size > 0 && (
             <div className={styles.exportWrapper}>
               {exportUrl ? (
